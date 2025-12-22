@@ -1,427 +1,401 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>CosmosDesk | Interactive Particle Engine</title>
-    <style>
-        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Courier New', Courier, monospace; }
-        
-        #overlay {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.9); z-index: 20; display: flex;
-            flex-direction: column; align-items: center; justify-content: center;
-            color: white; transition: opacity 0.5s;
-        }
+<meta charset="UTF-8">
+<title>CosmosDesk</title>
 
-        h1 { font-size: 3rem; letter-spacing: 5px; color: #fff; text-align: center; }
-        p { color: #888; font-size: 1rem; margin-bottom: 20px; }
-        
-        #start-btn {
-            padding: 15px 40px; font-size: 18px; background: transparent;
-            color: #00ffcc; border: 2px solid #00ffcc; cursor: pointer;
-            text-transform: uppercase; border-radius: 5px; font-weight: bold;
-        }
-        #start-btn:hover { background: #00ffcc; color: black; }
+<link rel="icon" type="image/png" href="logo.png">
 
-        /* HUD - Always Visible */
-        .hud {
-            position: absolute; top: 20px; width: 100%; text-align: center;
-            color: rgba(255, 255, 255, 0.8); pointer-events: none; z-index: 5;
-            text-shadow: 0 0 5px #000;
-        }
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+  background: radial-gradient(circle at top, #050510, #000);
+  font-family: "Segoe UI", Arial, sans-serif;
+}
 
-        /* Debug Video - Increased Opacity so you can see tracking */
-        #video-feed {
-            position: absolute; bottom: 20px; left: 20px; width: 240px; height: 180px;
-            z-index: 10; border: 2px solid #333; transform: scaleX(-1);
-            border-radius: 8px; opacity: 0.6; 
-        }
-    </style>
+/* ===== HOME ===== */
+#home {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #111, #000 70%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  z-index: 1000;
+}
+
+#home img {
+  width: 170px;
+  margin-bottom: 25px;
+  filter: drop-shadow(0 0 30px rgba(120,150,255,0.7));
+}
+
+#home h1 {
+  font-size: 52px;
+  letter-spacing: 2px;
+}
+
+#home p {
+  max-width: 700px;
+  font-size: 18px;
+  opacity: 0.85;
+  line-height: 1.6;
+}
+
+#enterBtn {
+  margin-top: 35px;
+  padding: 16px 44px;
+  font-size: 20px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #fff, #dbe4ff);
+  color: black;
+}
+
+/* ===== HUD ===== */
+#topHUD {
+  position: absolute;
+  top: 14px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 24px;
+  color: white;
+  z-index: 50;
+  pointer-events: none;
+}
+
+#info {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+#bpmBox {
+  background: rgba(0,0,0,0.55);
+  padding: 8px 18px;
+  border-radius: 22px;
+  font-size: 14px;
+  backdrop-filter: blur(6px);
+}
+
+/* ===== CONTROLS ===== */
+#micBtn {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  padding: 12px 20px;
+  font-size: 14px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #fff, #dbe4ff);
+  color: black;
+  z-index: 60;
+}
+
+/* ===== VIDEO ===== */
+#video {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  width: 170px;
+  height: 130px;
+  opacity: 0.6;
+  border-radius: 10px;
+  transform: scaleX(-1);
+  z-index: 40;
+}
+
+#canvas {
+  width: 100vw;
+  height: 100vh;
+}
+</style>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 </head>
+
 <body>
 
-    <div id="overlay">
-        <h1>COSMOS DESK</h1>
-        <p>Ensure your hand is visible in the camera.</p>
-        <button id="start-btn" disabled>Loading AI...</button>
-    </div>
+<!-- HOME -->
+<div id="home">
+  <img src="logo.png" alt="CosmosDesk Logo">
+  <h1>CosmosDesk</h1>
+  <p>
+    Interactive 3D particle system controlled by
+    <b>hand gestures</b> and <b>music beats</b>.
+  </p>
+  <button id="enterBtn">ENTER COSMOS</button>
+</div>
 
-    <div class="hud">
-        MODE: <span id="mode-display" style="color:#00ffcc; font-weight:bold;">SPHERE</span> <br>
-        <small>Debug: If you see RED DOTS, tracking is active.</small>
-    </div>
+<!-- HUD -->
+<div id="topHUD">
+  <div id="info">
+    ✋ Color | ✋✋ Size | ✊ Fist = Shape | 🎵 Beat = Shape
+  </div>
+  <div id="bpmBox">
+    BPM: <span id="bpmValue">--</span>
+  </div>
+</div>
 
-    <video id="video-feed" playsinline muted></video>
-    <div id="canvas-container"></div>
+<button id="micBtn">🎤 Enable Mic</button>
+<video id="video" playsinline></video>
+<div id="canvas"></div>
 
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-            }
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { FilesetResolver, HandLandmarker }
+from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
+
+/* ================= CONFIG ================= */
+const COUNT = 14000;
+const RADIUS = 22;
+const SHAPES = ['sphere','torus','spiral','dna','wave','star'];
+
+/* ================= STATE ================= */
+let scene, camera, renderer, geometry;
+let shapeIndex = 0;
+let lastShapeSwitch = 0;
+
+let target = new Float32Array(COUNT*3);
+let vel = new Float32Array(COUNT*3);
+
+let scale = 1, targetScale = 1;
+let hue = 0.55, targetHue = 0.55;
+
+/* ===== AUDIO ===== */
+let audioCtx = null;
+let analyser = null;
+let audioData = null;
+let micEnabled = false;
+
+let lastBass = 0;
+let beatStrength = 0;
+let lastBeatTime = 0;
+let bpm = 0;
+
+/* ================= HOME ENTER ================= */
+document.getElementById("enterBtn").onclick = () => {
+  document.getElementById("home").style.display = "none";
+  initThree();
+  initVision();
+};
+
+/* ================= THREE ================= */
+function initThree(){
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,1000);
+  camera.position.z = 42;
+
+  renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(innerWidth,innerHeight);
+  document.getElementById("canvas").appendChild(renderer.domElement);
+
+  new OrbitControls(camera,renderer.domElement).autoRotate = true;
+
+  geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position",new THREE.BufferAttribute(new Float32Array(COUNT*3),3));
+  geometry.setAttribute("color",new THREE.BufferAttribute(new Float32Array(COUNT*3),3));
+
+  scene.add(new THREE.Points(
+    geometry,
+    new THREE.PointsMaterial({
+      size:0.18,
+      vertexColors:true,
+      blending:THREE.AdditiveBlending,
+      transparent:true
+    })
+  ));
+
+  buildShape(SHAPES[shapeIndex],true);
+  animate();
+}
+
+/* ================= SHAPES ================= */
+function buildShape(type,instant=false){
+  for(let i=0;i<COUNT;i++){
+    const id=i*3;
+    const t=Math.random()*Math.PI*2;
+    let x=0,y=0,z=0;
+
+    if(type==='sphere'){
+      const p=Math.acos(2*Math.random()-1);
+      x=RADIUS*Math.sin(p)*Math.cos(t);
+      y=RADIUS*Math.sin(p)*Math.sin(t);
+      z=RADIUS*Math.cos(p);
+    }
+    if(type==='torus'){
+      const R=RADIUS*0.9,r=RADIUS*0.35,p=Math.random()*Math.PI*2;
+      x=(R+r*Math.cos(p))*Math.cos(t);
+      y=(R+r*Math.cos(p))*Math.sin(t);
+      z=r*Math.sin(p);
+    }
+    if(type==='spiral'){
+      const r=i/COUNT*RADIUS*1.3;
+      x=Math.cos(t*6)*r;
+      y=(Math.random()-0.5)*6;
+      z=Math.sin(t*6)*r;
+    }
+    if(type==='dna'){
+      const h=(i/COUNT-0.5)*RADIUS*2;
+      x=Math.cos(t*2)*RADIUS*0.4;
+      y=h;
+      z=Math.sin(t*2)*RADIUS*0.4;
+    }
+    if(type==='wave'){
+      const u=i/COUNT*RADIUS*2-RADIUS;
+      x=u;
+      y=Math.sin(u*0.4+t)*RADIUS*0.4;
+      z=Math.cos(u*0.4+t)*RADIUS*0.4;
+    }
+    if(type==='star'){
+      const r=i%2?RADIUS:RADIUS*0.5;
+      x=Math.cos(t)*r;
+      y=Math.sin(t)*r;
+      z=(Math.random()-0.5)*5;
+    }
+
+    target[id]=x; target[id+1]=y; target[id+2]=z;
+    if(instant){
+      geometry.attributes.position.array[id]=x;
+      geometry.attributes.position.array[id+1]=y;
+      geometry.attributes.position.array[id+2]=z;
+    }
+  }
+}
+
+/* ================= SHAPE SWITCH (SHARED) ================= */
+function switchShape(){
+  const now = Date.now();
+  if(now - lastShapeSwitch < 1200) return; // debounce
+  shapeIndex = (shapeIndex + 1) % SHAPES.length;
+  buildShape(SHAPES[shapeIndex]);
+  lastShapeSwitch = now;
+}
+
+/* ================= MIC ================= */
+document.getElementById("micBtn").onclick = async () => {
+  if(micEnabled) return;
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  await audioCtx.resume();
+  const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+  const src = audioCtx.createMediaStreamSource(stream);
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 512;
+  audioData = new Uint8Array(analyser.frequencyBinCount);
+  src.connect(analyser);
+  micEnabled = true;
+  document.getElementById("micBtn").innerText = "🎵 Mic Active";
+};
+
+/* ================= ANIMATE ================= */
+function animate(){
+  requestAnimationFrame(animate);
+
+  if(analyser){
+    analyser.getByteFrequencyData(audioData);
+
+    let bass=0;
+    const bins=Math.floor(audioData.length*0.15);
+    for(let i=0;i<bins;i++) bass+=audioData[i];
+    bass=bass/bins/255;
+
+    if(bass>0.1 && bass>lastBass*1.5){
+      const now=performance.now();
+      const interval=now-lastBeatTime;
+      if(interval>350){
+        const detected=Math.round(60000/interval);
+        if(detected>=60 && detected<=180){
+          bpm=detected;
+          document.getElementById("bpmValue").innerText=bpm;
         }
-    </script>
+        lastBeatTime=now;
+        beatStrength=1.0;
 
-    <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-        import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
+        // 🔥 MUSIC BEAT SHAPE CHANGE
+        if(Math.random()>0.6) switchShape();
+      }
+    }
+    lastBass=bass;
+  }
 
-        // CONFIG
-        const CONFIG = {
-            count: 12000,
-            shapes: ['sphere', 'text-cosmos', 'blackhole', 'nebula'], 
-            bloomStrength: 1.5,
-            interactionRadius: 400, // INCREASED: Easier to hit particles
-            fistThreshold: 0.25     // INCREASED: Easier to trigger switch
-        };
+  beatStrength*=0.88;
 
-        // VARIABLES
-        let scene, camera, renderer, composer;
-        let points, geometry;
-        let audioContext, analyser, dataArray;
-        let handLandmarker;
-        let bloomPass;
-        let debugSphere; // The Red Dot
+  scale+=((targetScale+beatStrength*1.6)-scale)*0.12;
+  hue+=((targetHue+beatStrength*0.7)-hue)*0.15;
 
-        // STATE
-        let currentShapeIdx = 0;
-        let targetPositions = new Float32Array(CONFIG.count * 3);
-        let time = 0;
-        let handPos = new THREE.Vector3(999, 999, 999); 
-        let isHandDetected = false;
-        let lastSwitchTime = 0;
+  const pos=geometry.attributes.position.array;
+  const col=geometry.attributes.color.array;
+  const color=new THREE.Color().setHSL(hue%1,0.85,0.55);
 
-        // UI
-        const btn = document.getElementById('start-btn');
-        const overlay = document.getElementById('overlay');
-        const modeDisplay = document.getElementById('mode-display');
+  for(let i=0;i<COUNT;i++){
+    const id=i*3;
+    vel[id]+=(target[id]*scale-pos[id])*0.002;
+    vel[id+1]+=(target[id+1]*scale-pos[id+1])*0.002;
+    vel[id+2]+=(target[id+2]*scale-pos[id+2])*0.002;
+    vel[id]*=0.9; vel[id+1]*=0.9; vel[id+2]*=0.9;
+    pos[id]+=vel[id]; pos[id+1]+=vel[id+1]; pos[id+2]+=vel[id+2];
+    col[id]=color.r; col[id+1]=color.g; col[id+2]=color.b;
+  }
 
-        // --- 1. SETUP ---
-        async function init() {
-            // Load Vision AI
-            const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm");
-            handLandmarker = await HandLandmarker.createFromOptions(vision, {
-                baseOptions: {
-                    modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
-                    delegate: "GPU"
-                },
-                runningMode: "VIDEO",
-                numHands: 1
-            });
+  geometry.attributes.position.needsUpdate=true;
+  geometry.attributes.color.needsUpdate=true;
+  renderer.render(scene,camera);
+}
 
-            btn.disabled = false;
-            btn.innerText = "START";
-            btn.addEventListener('click', startExperience);
-        }
+/* ================= HAND TRACKING ================= */
+async function initVision(){
+  const video=document.getElementById("video");
+  const vision=await FilesetResolver.forVisionTasks(
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
+  );
+  const lm=await HandLandmarker.createFromOptions(vision,{
+    baseOptions:{modelAssetPath:
+      "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"},
+    runningMode:"VIDEO",numHands:2
+  });
 
-        async function startExperience() {
-            // Audio + Video Request
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-                setupSystem(stream, true);
-            } catch (e) {
-                console.warn("Retrying with Video Only...");
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
-                    setupSystem(stream, false);
-                } catch (e2) {
-                    alert("Camera blocked. Please allow access.");
-                }
-            }
-        }
+  const stream=await navigator.mediaDevices.getUserMedia({video:true});
+  video.srcObject=stream;
+  await video.play();
 
-        function setupSystem(stream, hasAudio) {
-            overlay.style.display = 'none';
+  const loop=()=>{
+    const r=lm.detectForVideo(video,performance.now());
+    if(r.landmarks?.length){
+      if(r.landmarks.length===2){
+        const a=r.landmarks[0][9],b=r.landmarks[1][9];
+        targetScale=1+Math.hypot(a.x-b.x,a.y-b.y)*2;
+      } else targetScale=1;
 
-            // Video Setup
-            const video = document.getElementById("video-feed");
-            video.srcObject = stream;
-            video.play();
+      targetHue=1-r.landmarks[0][9].x;
 
-            // Audio Setup
-            if (hasAudio) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const source = audioContext.createMediaStreamSource(stream);
-                analyser = audioContext.createAnalyser();
-                analyser.fftSize = 64; 
-                source.connect(analyser);
-                dataArray = new Uint8Array(analyser.frequencyBinCount);
-            }
-
-            // Start Loops
-            predictWebcam();
-            initThree();
-        }
-
-        // --- 2. THREE.JS ---
-        function initThree() {
-            const container = document.getElementById('canvas-container');
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 40; // Moved camera back slightly
-
-            renderer = new THREE.WebGLRenderer({ antialias: false });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            container.appendChild(renderer.domElement);
-
-            // Bloom
-            const renderScene = new RenderPass(scene, camera);
-            bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-            bloomPass.threshold = 0;
-            bloomPass.strength = CONFIG.bloomStrength;
-            bloomPass.radius = 0.5;
-
-            composer = new EffectComposer(renderer);
-            composer.addPass(renderScene);
-            composer.addPass(bloomPass);
-
-            // Create Visual Debugger (The Red Dot)
-            const debugGeo = new THREE.SphereGeometry(1, 16, 16);
-            const debugMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-            debugSphere = new THREE.Mesh(debugGeo, debugMat);
-            debugSphere.position.set(999,999,999); // Hide initially
-            scene.add(debugSphere);
-
-            // Particles
-            createParticles();
-            
-            // Orbit Controls (Mouse)
-            const controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.autoRotate = true;
-            controls.autoRotateSpeed = 0.5;
-
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                composer.setSize(window.innerWidth, window.innerHeight);
-            });
-
-            animate();
-        }
-
-        function createParticles() {
-            geometry = new THREE.BufferGeometry();
-            const positions = [];
-            const colors = [];
-            const colorObj = new THREE.Color();
-
-            for(let i = 0; i < CONFIG.count; i++) {
-                positions.push((Math.random() - 0.5) * 100, (Math.random() - 0.5) * 100, (Math.random() - 0.5) * 100);
-                colorObj.setHSL(0.6, 0.8, 0.5);
-                colors.push(colorObj.r, colorObj.g, colorObj.b);
-            }
-
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-
-            const material = new THREE.PointsMaterial({
-                size: 0.2, // Slightly larger particles
-                vertexColors: true,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false,
-                transparent: true
-            });
-
-            points = new THREE.Points(geometry, material);
-            scene.add(points);
-
-            calculateShape(CONFIG.shapes[0]);
-        }
-
-        function calculateShape(type) {
-            modeDisplay.innerText = type.toUpperCase().replace('-', ' ');
-            const p = targetPositions;
-            const count = CONFIG.count;
-
-            if (type === 'sphere') {
-                for(let i=0; i<count; i++) {
-                    const r = 15;
-                    const phi = Math.acos(-1 + (2 * i) / count);
-                    const theta = Math.sqrt(count * Math.PI) * phi;
-                    p[i*3] = r * Math.cos(theta) * Math.sin(phi);
-                    p[i*3+1] = r * Math.sin(theta) * Math.sin(phi);
-                    p[i*3+2] = r * Math.cos(phi);
-                }
-            }
-            else if (type === 'text-cosmos') {
-                const textPoints = generateTextPoints("COSMOS");
-                for(let i=0; i<count; i++) {
-                    const sample = textPoints[i % textPoints.length];
-                    p[i*3] = sample.x; p[i*3+1] = sample.y; p[i*3+2] = sample.z;
-                }
-            }
-            else if (type === 'blackhole') {
-                for(let i=0; i<count; i++) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const r = 10 + Math.random() * 20;
-                    p[i*3] = Math.cos(angle) * r;
-                    p[i*3+1] = (Math.random()-0.5) * 2;
-                    p[i*3+2] = Math.sin(angle) * r;
-                }
-            }
-            else if (type === 'nebula') {
-                for(let i=0; i<count; i++) {
-                    p[i*3] = (Math.random()-0.5)*50; 
-                    p[i*3+1] = (Math.random()-0.5)*30; 
-                    p[i*3+2] = (Math.random()-0.5)*50;
-                }
-            }
-        }
-
-        function generateTextPoints(text) {
-            const c = document.createElement('canvas');
-            c.width = 300; c.height = 100;
-            const ctx = c.getContext('2d');
-            ctx.fillStyle = 'black'; ctx.fillRect(0,0,300,100);
-            ctx.fillStyle = 'white'; ctx.font = 'bold 60px Arial';
-            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(text, 150, 50);
-            const data = ctx.getImageData(0,0,300,100).data;
-            const pts = [];
-            for(let y=0; y<100; y+=2) {
-                for(let x=0; x<300; x+=2) {
-                    if(data[(y*300+x)*4] > 128) {
-                        pts.push({ x:(x-150)*0.3, y:(50-y)*0.3, z:(Math.random()-0.5)*2 });
-                    }
-                }
-            }
-            return pts.length? pts : [{x:0,y:0,z:0}];
-        }
-
-        // --- 3. ANIMATION LOOP ---
-        function animate() {
-            requestAnimationFrame(animate);
-            time += 0.01;
-
-            // Audio Level (Boosted)
-            let audioLevel = 0;
-            if (analyser) {
-                analyser.getByteFrequencyData(dataArray);
-                let sum = 0;
-                for(let i=0; i<dataArray.length; i++) sum += dataArray[i];
-                audioLevel = (sum / dataArray.length) / 255; // 0.0 to 1.0
-            }
-
-            // Visual Debugger Update (Move the Red Dot)
-            if (isHandDetected) {
-                // Map from -1..1 range to World Range (~ -40..40)
-                // We inverse X because webcam is mirrored
-                debugSphere.position.set(
-                    (0.5 - handPos.x) * 60, // Wider range
-                    (0.5 - handPos.y) * 40,
-                    0
-                );
-            } else {
-                debugSphere.position.set(999,999,999);
-            }
-
-            const positions = geometry.attributes.position.array;
-            const handVec = debugSphere.position; // Use the red dot position for physics
-
-            for (let i = 0; i < CONFIG.count; i++) {
-                const idx = i * 3;
-                let tx = targetPositions[idx];
-                let ty = targetPositions[idx+1];
-                let tz = targetPositions[idx+2];
-
-                // Audio Pulse
-                const pulse = 1.0 + (audioLevel * 0.5); // Stronger Pulse
-                tx *= pulse; ty *= pulse; tz *= pulse;
-
-                // Physics (Gravity/Repulsion)
-                if (isHandDetected) {
-                    const dx = positions[idx] - handVec.x;
-                    const dy = positions[idx+1] - handVec.y;
-                    const dz = positions[idx+2] - handVec.z;
-                    const distSq = dx*dx + dy*dy + dz*dz;
-
-                    // Interaction Radius Check
-                    if (distSq < CONFIG.interactionRadius) {
-                        const force = (CONFIG.interactionRadius - distSq) * 0.02; // Strength
-                        tx += dx * force;
-                        ty += dy * force;
-                        tz += dz * force;
-                    }
-                }
-
-                // Move Particle
-                const speed = 0.05;
-                positions[idx] += (tx - positions[idx]) * speed;
-                positions[idx+1] += (ty - positions[idx+1]) * speed;
-                positions[idx+2] += (tz - positions[idx+2]) * speed;
-            }
-
-            geometry.attributes.position.needsUpdate = true;
-            
-            // Color Cycle
-            points.material.color.setHSL((time * 0.1)%1, 0.8, 0.5 + audioLevel * 0.5);
-            
-            composer.render();
-        }
-
-        // --- 4. VISION LOGIC ---
-        function predictWebcam() {
-            const video = document.getElementById("video-feed");
-            let lastVideoTime = -1;
-            
-            const loop = () => {
-                if (video.currentTime !== lastVideoTime) {
-                    lastVideoTime = video.currentTime;
-                    const result = handLandmarker.detectForVideo(video, performance.now());
-                    
-                    if (result.landmarks && result.landmarks.length > 0) {
-                        isHandDetected = true;
-                        const lm = result.landmarks[0];
-                        handPos.set(lm[8].x, lm[8].y, 0); // Index Tip
-
-                        // Fist Check (Distance between Tip and Wrist)
-                        const wrist = lm[0];
-                        const tips = [8, 12, 16, 20]; // Fingertips
-                        let foldedCount = 0;
-                        
-                        tips.forEach(t => {
-                            // Calculate distance
-                            const d = Math.sqrt(
-                                Math.pow(lm[t].x - wrist.x, 2) + 
-                                Math.pow(lm[t].y - wrist.y, 2)
-                            );
-                            if (d < CONFIG.fistThreshold) foldedCount++;
-                        });
-
-                        // If 3 or more fingers are folded close to wrist -> Fist
-                        if (foldedCount >= 3) {
-                            if (Date.now() - lastSwitchTime > 1500) {
-                                switchShape();
-                                lastSwitchTime = Date.now();
-                            }
-                        }
-
-                    } else {
-                        isHandDetected = false;
-                    }
-                }
-                requestAnimationFrame(loop);
-            };
-            loop();
-        }
-
-        function switchShape() {
-            currentShapeIdx = (currentShapeIdx + 1) % CONFIG.shapes.length;
-            calculateShape(CONFIG.shapes[currentShapeIdx]);
-            // Flash Effect
-            bloomPass.strength = 5.0;
-            setTimeout(() => bloomPass.strength = CONFIG.bloomStrength, 200);
-        }
-
-        init();
-    </script>
+      // ✊ FIST → SHAPE CHANGE (FIXED)
+      const h=r.landmarks[0];
+      const tips=[8,12,16,20];
+      const kn=[5,9,13,17];
+      let folded=0;
+      for(let i=0;i<4;i++){
+        if(h[tips[i]].y > h[kn[i]].y) folded++;
+      }
+      if(folded>=3) switchShape();
+    }
+    requestAnimationFrame(loop);
+  };
+  loop();
+}
+</script>
 </body>
 </html>
