@@ -1,89 +1,139 @@
 <div align="center">
 
-# 🌌 Solar System Project
+# 🌌 CosmosDesk
 
-### An Interactive 3D Solar System built with modern web technologies
+### An Interactive Cosmic Workspace with Real-Time Hand Tracking & Particle Visualization
 
-Explore the planets, experience realistic animations, and learn about our Solar System through an immersive web experience.
+Transform your screen into a futuristic universe where your hands control mesmerizing particle effects in real time.
 
-![GitHub stars](https://img.shields.io/github/stars/S-SamarthBhatt-B/Solar-System-Project?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/S-SamarthBhatt-B/Solar-System-Project?style=for-the-badge)
-![GitHub repo size](https://img.shields.io/github/repo-size/S-SamarthBhatt-B/Solar-System-Project?style=for-the-badge)
+![GitHub stars](https://img.shields.io/github/stars/S-SamarthBhatt-B/CosmosDesk?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/S-SamarthBhatt-B/CosmosDesk?style=for-the-badge)
+![GitHub repo-size](https://img.shields.io/github/repo-size/S-SamarthBhatt-B/CosmosDesk?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
 ### 🚀 Live Demo
 
-**https://s-samarthbhatt-b.github.io/Solar-System-Project/**
+**https://s-samarthbhatt-b.github.io/CosmosDesk/**
 
 </div>
 
 ---
 
-# 🌍 About the Project
+# 🌠 About
 
-This project is an interactive visualization of our Solar System that allows users to explore planets in a realistic 3D environment.
+CosmosDesk is an immersive web experience that combines **particle simulations, hand tracking, music visualization, and modern UI design** into one interactive application.
 
-The goal of this project is to combine **science, education, and web development** into an engaging experience that demonstrates the power of modern frontend technologies.
+Using your webcam, you can control thousands of particles with natural hand movements while enjoying beautiful animations and multiple visualization modes.
 
-Whether you're a student, developer, or astronomy enthusiast, this project offers an enjoyable way to learn about our cosmic neighborhood.
+Designed as both a creative playground and a technical showcase, CosmosDesk demonstrates the possibilities of modern web technologies.
 
 ---
 
 # ✨ Features
 
-- 🌞 Realistic Solar System
-- 🪐 Animated Planet Orbits
-- 🌍 Individual Planet Models
-- 🌌 Beautiful Space Background
-- ⚡ Smooth Animations
-- 🎯 Interactive Camera Controls
+- ✋ Real-Time Hand Tracking
+- 🌌 Interactive Particle Universe
+- 🎵 Music Reactive Visualizer
+- 🎨 Multiple Particle Shapes
+- ⚡ High Performance Rendering
+- 🌠 Smooth Animations
+- 🖱 Interactive Camera Controls
+- 🌑 Beautiful Dark Theme
 - 📱 Responsive Design
-- 🚀 Fast Performance
-- 🎨 Modern User Interface
-- 💻 Cross Platform Support
+- 🚀 Fast Loading
+- 🎛 Customizable Effects
+- 🎮 Immersive User Experience
 
 ---
 
 # 📸 Preview
 
-> Add screenshots here
+> Add screenshots or GIFs here.
 
 ```
 assets/
- ├── home.png
- ├── solar-system.png
- ├── planets.png
- └── mobile.png
+├── home.png
+├── particles.png
+├── hand-tracking.png
+├── music-mode.png
+└── demo.gif
 ```
 
-Example:
+Example
 
 ```md
 ![Home](assets/home.png)
 
-![Solar System](assets/solar-system.png)
+![Particles](assets/particles.png)
+
+![Hand Tracking](assets/hand-tracking.png)
 ```
 
 ---
 
-# 🛠 Technologies Used
+# 🎥 Demo
+
+Adding a short GIF of the particle effects and hand tracking is highly recommended.
+
+```
+assets/demo.gif
+```
+
+---
+
+# 🛠 Built With
 
 - HTML5
 - CSS3
 - JavaScript (ES6)
-- Three.js *(if used)*
-- WebGL *(if used)*
+- Three.js
+- MediaPipe Hands
+- WebGL
+- Web Audio API
+
+---
+
+# 🚀 Core Features
+
+### 🌌 Particle Engine
+
+- Thousands of animated particles
+- Smooth GPU rendering
+- Dynamic colors
+- Multiple particle modes
+
+### ✋ Hand Tracking
+
+- Webcam-based interaction
+- Finger tracking
+- Gesture detection
+- Natural controls
+
+### 🎵 Audio Visualization
+
+- Beat reactive particles
+- Live audio animation
+- Dynamic effects
+- Immersive visuals
+
+### 🎨 UI Experience
+
+- Modern interface
+- Responsive layout
+- Smooth transitions
+- Clean design
 
 ---
 
 # 📂 Project Structure
 
 ```
-Solar-System-Project
+CosmosDesk
 │
 ├── assets/
 ├── css/
 ├── js/
+├── shaders/
 ├── images/
 ├── index.html
 ├── README.md
@@ -94,47 +144,25 @@ Solar-System-Project
 
 # 🚀 Getting Started
 
-## Clone Repository
+Clone the repository
 
 ```bash
-git clone https://github.com/S-SamarthBhatt-B/Solar-System-Project.git
+git clone https://github.com/S-SamarthBhatt-B/CosmosDesk.git
 ```
 
-Open the project
+Go to the project
 
 ```bash
-cd Solar-System-Project
+cd CosmosDesk
 ```
 
-Simply open
+Run using VS Code Live Server
+
+or simply open
 
 ```
 index.html
 ```
-
-or use
-
-```bash
-Live Server
-```
-
-inside VS Code.
-
----
-
-# 🌎 Planet Information
-
-The project includes:
-
-- ☀️ Sun
-- ☿ Mercury
-- ♀ Venus
-- 🌍 Earth
-- ♂ Mars
-- ♃ Jupiter
-- ♄ Saturn
-- ♅ Uranus
-- ♆ Neptune
 
 ---
 
@@ -143,44 +171,71 @@ The project includes:
 | Action | Function |
 |---------|----------|
 | Mouse Drag | Rotate Camera |
-| Mouse Scroll | Zoom In/Out |
-| Left Click | Interact |
-| Touch | Mobile Support |
+| Mouse Wheel | Zoom |
+| Hand Movement | Control Particles |
+| Touch | Mobile Navigation |
+| Music | Reactive Particle Effects |
 
 ---
 
-# 💡 Future Improvements
+# 💻 Browser Support
 
-- 🌑 Moon animations
-- ☄️ Asteroids
-- 🌠 Comets
-- 🚀 Spacecraft
-- Planet Information Cards
-- Search Feature
-- Day/Night Simulation
-- Planet Speed Controls
-- Sound Effects
-- VR Support
+- ✅ Chrome
+- ✅ Edge
+- ✅ Firefox
+- ✅ Brave
+- ✅ Opera
+
+> Webcam permission is required for Hand Tracking.
 
 ---
 
-# 📈 Learning Objectives
+# 🌟 Highlights
+
+- ✨ Real-Time Graphics
+- 🪄 Interactive Experience
+- 🌌 Cosmic Theme
+- 🎵 Music Visualization
+- 🤖 AI Hand Tracking
+- ⚡ Optimized Performance
+- 🎨 Beautiful Animations
+
+---
+
+# 📈 What You'll Learn
 
 This project demonstrates:
 
-- 3D Graphics
+- Three.js
+- WebGL Rendering
+- MediaPipe Integration
 - JavaScript Animation
-- DOM Manipulation
-- Responsive Design
-- Mathematical Calculations
-- Orbital Motion
-- Interactive UI Development
+- Particle Systems
+- Audio Processing
+- Camera Controls
+- Interactive UI Design
+- Performance Optimization
+
+---
+
+# 🔮 Future Improvements
+
+- 🌍 VR Support
+- 🥽 AR Mode
+- 🤝 Multi-Hand Interaction
+- ☁️ Cloud Saved Settings
+- 🎼 Spotify Integration
+- 🎨 More Particle Presets
+- 🌌 Galaxy Generator
+- 🛰 Space Objects
+- 🎮 Game Mode
+- 🧠 AI Gesture Recognition
 
 ---
 
 # 🤝 Contributing
 
-Contributions are always welcome.
+Contributions are welcome!
 
 1. Fork the repository
 
@@ -190,13 +245,13 @@ Contributions are always welcome.
 git checkout -b feature-name
 ```
 
-3. Commit changes
+3. Commit your changes
 
 ```bash
-git commit -m "Added awesome feature"
+git commit -m "Added new feature"
 ```
 
-4. Push
+4. Push to GitHub
 
 ```bash
 git push origin feature-name
@@ -206,17 +261,17 @@ git push origin feature-name
 
 ---
 
-# ⭐ Support
+# ⭐ Show Your Support
 
-If you like this project, please consider giving it a ⭐ on GitHub.
+If you enjoyed this project, consider giving it a ⭐ on GitHub.
 
-It helps others discover the project and motivates future improvements.
+It helps others discover the project and motivates future development.
 
 ---
 
 # 👨‍💻 Author
 
-**Samarth Bhatt**
+## Samarth Bhatt
 
 GitHub
 
@@ -232,14 +287,15 @@ https://linkedin.com/in/samarth-bhatt29
 
 This project is licensed under the MIT License.
 
-Feel free to use, modify, and share this project.
+Feel free to use, modify, and distribute it for educational and personal purposes.
 
 ---
 
 <div align="center">
 
-### 🌌 Keep Exploring the Universe!
+## 🌌 Explore the Universe. Control the Particles.
 
-Made with ❤️ by **Samarth Bhatt**
+**Made with ❤️ by Samarth Bhatt**
 
 </div>
+````0
